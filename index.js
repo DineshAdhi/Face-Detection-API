@@ -18,7 +18,7 @@ var upload = multer({storage: storage}).single('avatar')
 
 var app = express();
 app.listen(port);
-console.log("Server listening to port " + port);
+console.log("Server listening to port" + port);
 
 
 app.get('/', function(req, res){
