@@ -3,7 +3,7 @@ var multer = require('multer')
 var opencv = require('opencv')
 
 var imageId = " ";
-var port = process.env.port || 3000
+var port = process.env.PORT || 3000
 var storage = multer.diskStorage({
   destination: function(req, file, callback){
     callback(null, 'Uploads/')
