@@ -43,7 +43,7 @@ app.post('/upload/:imageId', function(req, res, next){
             else
             {
               var json = {};
-              json["imageURL"] = "http:localhost:3000/getImage/"+imageId;
+              json["imageURL"] = "https://face-cedar-api.herokuapp.com/getImage/"+imageId;
               json["message"] = data.length + " faces detected."
               for(var i=0; i<data.length; i++)
               {
