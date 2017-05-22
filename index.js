@@ -81,7 +81,7 @@ function readImage(imageId, superCallback)
         }
 
         im.save('Processed/'+imageId+'.jpg')
-        console.log("Image Process Complete.Image Saved to the Processed Folder");
+        console.log("Image Process Complete. Saved to the folder");
         return superCallback(faces, err)
       })
     }
