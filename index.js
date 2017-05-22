@@ -33,6 +33,7 @@ app.post('/upload/:imageId', function(req, res, next){
         {
           console.log("There was an error while uploading the file");
           console.log(err);
+          res.send({"Error" : "Avatar Keyword is missing. Please use 'avatar' variable in your body part of your request"});
         }
         else {
           readImage(imageId, function(data, err) {
