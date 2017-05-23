@@ -1,6 +1,8 @@
 var express = require('express')
 var multer = require('multer')
 var opencv = require('opencv')
+var request = require('request')
+var fs = require('fs')
 
 var imageId = " ";
 var port = process.env.PORT || 3000
@@ -33,25 +35,11 @@ app.post('/upload/:imageId', function(req, res, next){
         {
           console.log("There was an error while uploading the file");
           console.log(err);
-          res.send({"Error" : "Avatar Keyword is missing. Please use 'avatar' variable in your body part of your request "});
+          res.send({"Error" : "Avatar Keyword is missing. Please use 'avatar' variable in your body part of your request"});
         }
         else {
-          readImage(imageId, function(data, err) {
-            if(err)
-            {
-              res.send(err);
-            }
-            else
-            {
-              var json = {};
-              json["imageURL"] = "https://face-cedar-api.herokuapp.com/getImage/"+imageId;
-              json["message"] = data.length + " faces detected."
-              for(var i=0; i<data.length; i++)
-              {
-                json[i] = data[i];
-              }
-              res.send(json);
-            }
+          processDownloadImage(imageId, function(json){
+            res.send(json);
           });
         }
   })
@@ -60,6 +48,24 @@ app.post('/upload/:imageId', function(req, res, next){
 app.get('/getImage/:imageId', function(req, res){
   res.sendFile("Processed/"+req.params['imageId']+".jpg", {"root" : __dirname});
   // res.sendFile("package.json",{"root": __dirname})
+})
+
+
+app.get('/upload/url', function(req, res){
+  console.log(req.query.url)
+  imageId = Date.now() ;
+  downloadImage(req.query.url, imageId , function(err){
+    if(err)
+    {
+      res.send({"Error" : "The URL you sent is broken"})
+    }
+    else {
+      processDownloadImage(imageId, function(json){
+        res.send(json);
+      });
+    }
+
+  })
 })
 
 
@@ -87,5 +93,37 @@ function readImage(imageId, superCallback)
       })
     }
   })
+}
 
+function downloadImage(uri,imageId,cb){
+  request.head(uri, function(err, res, body){
+    if(err)
+      console.log(err, cb(err))
+    else {
+      console.log("Request success");
+    };
+
+    request(uri).pipe(fs.createWriteStream("./Uploads/"+imageId +".jpg")).on('close', cb);
+  })
+}
+
+function processDownloadImage(imageId, cb)
+{
+  readImage(imageId, function(data, err) {
+    if(err)
+    {
+      res.send(err);
+    }
+    else
+    {
+      var json = {};
+      json["imageURL"] = "https://face-cedar-api.herokuapp.com/getImage/"+imageId;
+      json["message"] = data.length + " faces detected."
+      for(var i=0; i<data.length; i++)
+      {
+        json[i] = data[i];
+      }
+      cb(json)
+    }
+  });
 }
